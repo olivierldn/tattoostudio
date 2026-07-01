@@ -130,7 +130,9 @@
     }
     .hero-bg {
       position: absolute; inset: 0; z-index: 0;
-      background: linear-gradient(160deg, #1A1510 0%, #0D0B08 50%, #080604 100%);
+      background:
+        linear-gradient(180deg, rgba(13,11,8,.55) 0%, rgba(13,11,8,.72) 55%, #0D0B08 100%),
+        url('images/hero-session.jpg') center 25% / cover no-repeat;
     }
     /* Decorative ink lines */
     .hero-lines {
@@ -204,6 +206,17 @@
     }
     .stat-num span { color: var(--gold); }
     .stat-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+
+    /* ─── STUDIO PHOTO BANNER ────────────────────────────────── */
+    .studio-photo { position: relative; height: 56vh; min-height: 400px; max-height: 620px; overflow: hidden; }
+    .studio-photo img { filter: grayscale(10%) contrast(1.05); }
+    .studio-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(0deg, rgba(13,11,8,.85) 0%, rgba(13,11,8,.25) 45%, rgba(13,11,8,.35) 100%);
+    }
+    .studio-caption {
+      position: absolute; left: 40px; bottom: 40px; z-index: 2; max-width: 560px;
+    }
 
     /* ─── SECTION WRAPPER ────────────────────────────────────── */
     .section { padding: 100px 40px; max-width: var(--fw); margin: 0 auto; width: 100%; }
@@ -494,6 +507,9 @@
       #footer { padding: 48px 20px 32px; }
       .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
       .footer-brand { grid-column: span 2; }
+
+      .studio-photo { height: 40vh; min-height: 300px; }
+      .studio-caption { left: 20px; bottom: 24px; max-width: calc(100% - 40px); }
     }
 
     /* ─── TABLET ─────────────────────────────────────────────── */
@@ -615,6 +631,22 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════ STUDIO -->
+<section aria-labelledby="studio-title">
+  <div class="studio-photo">
+    <img
+      src="images/studio-interior.jpg"
+      alt="INK MEMORY studio interior — private tattoo stations in Shoreditch"
+      loading="lazy" width="1672" height="941"
+    />
+    <div class="studio-overlay" aria-hidden="true"></div>
+    <div class="studio-caption reveal">
+      <div class="section-eyebrow">Our Space</div>
+      <h2 class="section-title" id="studio-title">Inside the <em>Studio</em></h2>
+    </div>
+  </div>
+</section>
+
 <!-- ══════════════════════════════════════ ARTISTS SELECT -->
 <section id="artists-section" aria-labelledby="artists-title">
   <div class="section">
@@ -634,9 +666,9 @@
       <div class="acard active" id="tab-mara" role="tab" aria-selected="true" aria-controls="pane-mara" tabindex="0" data-artist="mara">
         <div class="acard-photo">
           <img
-            src="https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=600"
+            src="images/artist-mara.jpg"
             alt="Mara Voss — tattoo artist portrait"
-            loading="lazy" width="600" height="400"
+            loading="lazy" width="1672" height="941"
           />
           <div class="acard-photo-overlay"></div>
         </div>
@@ -655,9 +687,9 @@
       <div class="acard" id="tab-kai" role="tab" aria-selected="false" aria-controls="pane-kai" tabindex="0" data-artist="kai">
         <div class="acard-photo">
           <img
-            src="https://images.pexels.com/photos/1851415/pexels-photo-1851415.jpeg?auto=compress&cs=tinysrgb&w=600"
+            src="images/artist-kai.jpg"
             alt="Kai Noda — tattoo artist portrait"
-            loading="lazy" width="600" height="400"
+            loading="lazy" width="1672" height="941"
           />
           <div class="acard-photo-overlay"></div>
         </div>
@@ -676,9 +708,9 @@
       <div class="acard" id="tab-felix" role="tab" aria-selected="false" aria-controls="pane-felix" tabindex="0" data-artist="felix">
         <div class="acard-photo">
           <img
-            src="https://images.pexels.com/photos/1484794/pexels-photo-1484794.jpeg?auto=compress&cs=tinysrgb&w=600"
+            src="images/artist-felix.jpg"
             alt="Felix Sol — tattoo artist portrait"
-            loading="lazy" width="600" height="400"
+            loading="lazy" width="1672" height="941"
           />
           <div class="acard-photo-overlay"></div>
         </div>
@@ -707,9 +739,9 @@
         <div class="ap-portrait">
           <div class="ap-portrait-img">
             <img
-              src="https://images.pexels.com/photos/5765827/pexels-photo-5765827.jpeg?auto=compress&cs=tinysrgb&w=600"
-              alt="Mara Voss tattoo work — black and grey realism"
-              loading="lazy" width="600" height="800"
+              src="images/artist-mara.jpg"
+              alt="Mara Voss — tattoo artist portrait"
+              loading="lazy" width="1672" height="941"
             />
           </div>
           <div class="ap-portrait-tag">Black &amp; Grey Realism</div>
@@ -753,9 +785,9 @@
         <div class="ap-portrait">
           <div class="ap-portrait-img">
             <img
-              src="https://images.pexels.com/photos/7983194/pexels-photo-7983194.jpeg?auto=compress&cs=tinysrgb&w=600"
-              alt="Kai Noda tattoo work — geometric fine line"
-              loading="lazy" width="600" height="800"
+              src="images/artist-kai.jpg"
+              alt="Kai Noda — tattoo artist portrait"
+              loading="lazy" width="1672" height="941"
             />
           </div>
           <div class="ap-portrait-tag">Fine Line &amp; Geometry</div>
@@ -799,9 +831,9 @@
         <div class="ap-portrait">
           <div class="ap-portrait-img">
             <img
-              src="https://images.pexels.com/photos/4123754/pexels-photo-4123754.jpeg?auto=compress&cs=tinysrgb&w=600"
-              alt="Felix Sol tattoo work — neo-traditional"
-              loading="lazy" width="600" height="800"
+              src="images/artist-felix.jpg"
+              alt="Felix Sol — tattoo artist portrait"
+              loading="lazy" width="1672" height="941"
             />
           </div>
           <div class="ap-portrait-tag">Neo-Traditional</div>
