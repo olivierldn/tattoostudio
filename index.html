@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="INK MEMORY — Custom tattoo artistry. Every mark carries what words cannot. Based in London.">
+  <title>INK MEMORY — Tattoos as Living Stories</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500&family=Lora:ital,wght@1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── RESET ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #F2EDE2; color: #080808; overflow-x: hidden; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    a { text-decoration: none; color: inherit; }
+    button { border: none; background: none; cursor: pointer; font-family: inherit; }
+    ul { list-style: none; }
+
+    /* ── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --cr: #F2EDE2;          /* cream */
+      --cr2: #EAE4D8;         /* cream dark */
+      --bk: #080808;          /* black */
+      --mu: #7A7A72;          /* muted */
+      --bd: rgba(8,8,8,.1);   /* border light */
+      --bdi: rgba(255,255,255,.1); /* border dark inv */
+      --fd: 'Bebas Neue', sans-serif;
+      --fs: 'Playfair Display', serif;
+      --fb: 'Inter', sans-serif;
+      --fm: 'JetBrains Mono', monospace;
+      --fsc: 'Lora', serif;
+      --sb: 48px;             /* sidebar */
+    }
+
+    /* ── GRAIN TEXTURE ───────────────────────────────────────── */
+    .grain::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: .5;
+      z-index: 1;
+      mix-blend-mode: multiply;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────────────────── */
+    .sb {
+      width: var(--sb);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 116px 0 40px;
+      position: relative;
+    }
+    .sb.li { border-right: 1px solid var(--bd); }
+    .sb.dk { border-right: 1px solid var(--bdi); }
+    .sn { font-family: var(--fm); font-size: 9px; letter-spacing: .12em; color: var(--mu); }
+    .sn.inv { color: rgba(255,255,255,.28); }
+    .sl {
+      writing-mode: vertical-rl; transform: rotate(180deg);
+      font-family: var(--fm); font-size: 8px; letter-spacing: .24em;
+      text-transform: uppercase; color: var(--mu);
+    }
+    .sl.inv { color: rgba(255,255,255,.22); }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    /* ── PROGRESS BAR (sidebar scroll line) ─────────────────── */
+    .sb-progress {
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 1px;
+      background: var(--bk);
+      transform-origin: top;
+      transition: height .1s linear;
+      opacity: .15;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px;
+    }
+    .nav-logo {
+      font-family: var(--fd); font-size: 24px; letter-spacing: .1em;
+      color: var(--bk); transition: color .35s;
+    }
+    .nav-r { display: flex; align-items: center; gap: 12px; }
+    .nav-lbl {
+      font-family: var(--fm); font-size: 9px; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--bk); transition: color .35s;
+    }
+    .burger {
+      display: flex; flex-direction: column; gap: 5px;
+      padding: 6px; cursor: pointer;
+    }
+    .burger span {
+      display: block; width: 22px; height: 1.5px; background: var(--bk);
+      transition: transform .38s cubic-bezier(.76,0,.24,1), opacity .3s, background .35s;
+      transform-origin: center;
+    }
+    #nav.inv .nav-logo, #nav.inv .nav-lbl { color: #fff; }
+    #nav.inv .burger span { background: #fff; }
+    .burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ── OVERLAY NAV ─────────────────────────────────────────── */
+    #ov {
+      position: fixed; inset: 0; background: var(--bk); z-index: 299;
+      display: flex; flex-direction: column; padding: 80px 32px 48px;
+      transform: translateX(100%);
+      transition: transform .58s cubic-bezier(.76,0,.24,1);
+    }
+    #ov.open { transform: translateX(0); }
+    .ov-links { margin-top: 24px; flex: 1; }
+    .ov-links li { border-top: 1px solid rgba(255,255,255,.08); overflow: hidden; }
+    .ov-links li:last-child { border-bottom: 1px solid rgba(255,255,255,.08); }
+    .ov-links a {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 0;
+      font-family: var(--fd); font-size: clamp(38px,8.5vw,68px);
+      color: #fff; letter-spacing: .02em;
+      transform: translateX(40px); opacity: 0;
+      transition: transform .45s cubic-bezier(.76,0,.24,1), opacity .4s, color .2s;
+    }
+    .ov-links a .ov-num {
+      font-family: var(--fm); font-size: 10px; letter-spacing: .1em;
+      color: rgba(255,255,255,.28); margin-top: 8px;
+    }
+    #ov.open .ov-links a { transform: translateX(0); opacity: 1; }
+    #ov.open .ov-links li:nth-child(1) a { transition-delay: .04s; }
+    #ov.open .ov-links li:nth-child(2) a { transition-delay: .08s; }
+    #ov.open .ov-links li:nth-child(3) a { transition-delay: .12s; }
+    #ov.open .ov-links li:nth-child(4) a { transition-delay: .16s; }
+    #ov.open .ov-links li:nth-child(5) a { transition-delay: .20s; }
+    .ov-links a:hover { color: rgba(255,255,255,.4); }
+    .ov-foot {
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding-top: 24px;
+      display: flex; justify-content: space-between; align-items: flex-end;
+    }
+    .ov-contact {
+      font-family: var(--fm); font-size: 10px; letter-spacing: .1em;
+      color: rgba(255,255,255,.32); line-height: 2;
+    }
+    .ov-book-btn {
+      font-family: var(--fm); font-size: 9px; letter-spacing: .2em;
+      text-transform: uppercase; color: #fff;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.3); padding-bottom: 6px;
+      transition: border-color .25s;
+    }
+    .ov-book-btn:hover { border-color: #fff; }
+    .ov-book-btn svg { width: 12px; height: 12px; }
+
+    /* ── HERO 01 ─────────────────────────────────────────────── */
+    #s01 {
+      display: flex; min-height: 100dvh;
+      background: var(--cr); position: relative; overflow: hidden;
+    }
+    #s01 .sb { padding-top: 100px; }
+    .h-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; }
+
+    /* photo column */
+    .h-photo { position: relative; overflow: hidden; }
+    .h-photo img {
+      filter: grayscale(100%) contrast(1.1) brightness(.96);
+      transition: transform 12s ease; height: 100dvh;
+    }
+    .h-photo:hover img { transform: scale(1.04); }
+    /* grain on photo */
+    .h-photo::after {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.015) 2px, rgba(0,0,0,.015) 4px);
+      pointer-events: none; z-index: 1;
+    }
+    .h-caption {
+      position: absolute; bottom: 32px; left: 20px; z-index: 2;
+      font-family: var(--fm); font-size: 9px; letter-spacing: .18em;
+      text-transform: uppercase; color: rgba(8,8,8,.42); line-height: 2.2;
+    }
+
+    /* content column */
+    .h-col {
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 100px 32px 40px; position: relative;
+    }
+    .h-col-num {
+      position: absolute; top: 100px; left: 32px;
+      font-family: var(--fm); font-size: 9px; letter-spacing: .12em; color: var(--mu);
+    }
+    .h-cta {
+      position: absolute; top: 156px; right: 24px;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 7px;
+    }
+    .h-cta-bar { width: 32px; height: 1px; background: var(--bk); }
+    .h-cta a {
+      font-family: var(--fm); font-size: 9px; letter-spacing: .14em;
+      text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+      transition: opacity .2s;
+    }
+    .h-cta a:hover { opacity: .5; }
+    .h-cta svg { width: 10px; height: 10px; }
+    h1.htitle {
+      font-family: var(--fd);
+      font-size: clamp(72px, 9.2vw, 148px);
+      line-height: .875; letter-spacing: .015em; color: var(--bk);
+      margin-bottom: 18px;
+      /* clip reveal */
+      clip-path: inset(0 100% 0 0);
+      transition: clip-path .9s cubic-bezier(.76,0,.24,1);
+    }
+    h1.htitle.on { clip-path: inset(0 0% 0 0); }
+    .htagline {
+      font-family: var(--fm); font-size: 9.5px; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--mu); margin-bottom: 32px;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity .6s .6s, transform .6s .6s;
+    }
+    .htagline.on { opacity: 1; transform: translateY(0); }
+    /* spin circle */
+    .spin {
+      position: absolute; bottom: 40px; right: 24px;
+      width: 76px; height: 76px;
+      animation: rot 16s linear infinite;
+      opacity: 0; transition: opacity .6s .9s;
+    }
+    .spin.on { opacity: 1; }
+    @keyframes rot { to { transform: rotate(360deg); } }
+    /* dots */
+    .h-dots { display: flex; flex-direction: column; gap: 6px; }
+    .hdot { width: 4px; height: 4px; border-radius: 50%; background: var(--bk); opacity: .2; transition: opacity .3s; }
+    .hdot.on { opacity: 1; }
+
+    /* ── PHILOSOPHY 02 ───────────────────────────────────────── */
+    #s02 { display: flex; min-height: 78vh; background: var(--bk); color: #fff; }
+    #s02 .sb { padding-top: 60px; padding-bottom: 60px; }
+    .p-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; }
+    .p-left { padding: 64px 40px; display: flex; flex-direction: column; justify-content: center; }
+    h2.phead {
+      font-family: var(--fs); font-size: clamp(34px,3.6vw,60px);
+      font-weight: 700; line-height: 1.04; letter-spacing: -.01em; margin-bottom: 28px;
+    }
+    .ptxt { font-size: 13px; line-height: 1.9; color: rgba(255,255,255,.52); }
+    .ptxt p + p { margin-top: 6px; }
+    .p-right { position: relative; overflow: hidden; }
+    .p-col {
+      position: absolute; inset: 0;
+      display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+      gap: 3px; padding: 40px 40px 40px 12px;
+    }
+    .pimg { overflow: hidden; background: #1a1a1a; }
+    .pimg img {
+      filter: grayscale(100%) contrast(1.05);
+      transition: transform .65s cubic-bezier(.25,.46,.45,.94);
+      height: 100%;
+    }
+    .pimg:hover img { transform: scale(1.07); }
+    .pimg.tall { grid-row: span 2; }
+
+    /* ── GALLERY 03 ──────────────────────────────────────────── */
+    #s03 { display: flex; background: var(--cr); position: relative; }
+    #s03 .sb { padding-top: 60px; padding-bottom: 60px; }
+    .g-body { flex: 1; padding: 60px 32px; }
+    .ggrid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      grid-auto-rows: 192px; gap: 4px; margin-bottom: 32px;
+    }
+    .gi {
+      overflow: hidden; background: #C8C3BB; cursor: pointer; position: relative;
+    }
+    .gi img {
+      filter: grayscale(100%) contrast(1.1);
+      transition: transform .65s cubic-bezier(.25,.46,.45,.94);
+      height: 100%;
+    }
+    .gi:hover img { transform: scale(1.08); filter: grayscale(100%) contrast(1.2); }
+    /* piece number overlay */
+    .gi-overlay {
+      position: absolute; inset: 0; background: rgba(8,8,8,0); z-index: 2;
+      display: flex; align-items: flex-end; padding: 12px;
+      transition: background .4s;
+    }
+    .gi:hover .gi-overlay { background: rgba(8,8,8,.45); }
+    .gi-num {
+      font-family: var(--fd); font-size: 42px; color: #fff;
+      line-height: 1; opacity: 0; transform: translateY(8px);
+      transition: opacity .35s, transform .35s;
+    }
+    .gi:hover .gi-num { opacity: 1; transform: translateY(0); }
+    .gi.big { grid-column: span 2; grid-row: span 2; }
+    .gi.tall { grid-row: span 2; }
+    .g-foot { display: flex; justify-content: flex-end; }
+    .gcta {
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer; border: none; background: none; font-family: inherit;
+    }
+    .gcta-txt {
+      font-family: var(--fm); font-size: 9px; letter-spacing: .22em;
+      text-transform: uppercase; text-align: right; line-height: 1.7; color: var(--bk);
+    }
+    .gcta-ring {
+      width: 44px; height: 44px; border: 1px solid var(--bk); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .3s, color .3s;
+    }
+    .gcta:hover .gcta-ring { background: var(--bk); color: #fff; }
+    .gcta-ring svg { width: 15px; height: 15px; }
+
+    /* ── PROCESS 04 ──────────────────────────────────────────── */
+    #s04 { display: flex; background: var(--bk); color: #fff; }
+    #s04 .sb { padding-top: 60px; padding-bottom: 60px; }
+    .pr-body { flex: 1; padding: 60px 32px; }
+    .prsteps { display: grid; grid-template-columns: repeat(5,1fr); }
+    .prs {
+      padding: 40px 20px; border-left: 1px solid var(--bdi);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .prs:first-child { border-left: none; }
+    .prs-n { font-family: var(--fm); font-size: 9px; letter-spacing: .12em; color: rgba(255,255,255,.25); }
+    .prs-t { font-family: var(--fm); font-size: 11px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; }
+    .prs-b { font-size: 11.5px; line-height: 1.8; color: rgba(255,255,255,.46); }
+    .prs-ico { margin-top: auto; padding-top: 20px; }
+    .prs-ico svg { width: 36px; height: 36px; opacity: .32; stroke: currentColor; fill: none; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── TESTIMONIALS 05 ─────────────────────────────────────── */
+    #s05 { display: flex; background: var(--cr); overflow: hidden; position: relative; }
+    #s05 .sb { padding-top: 60px; padding-bottom: 60px; }
+    .w-body { flex: 1; padding: 60px 32px; position: relative; }
+    .wgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+    .tc {
+      background: var(--cr2); padding: 36px 26px 26px; position: relative;
+    }
+    /* tape strip */
+    .tc::before {
+      content: ''; position: absolute; top: -7px;
+      width: 54px; height: 13px; background: #111; opacity: .82;
+    }
+    .tc:nth-child(1)::before { left: 20px; transform: rotate(-1.8deg); }
+    .tc:nth-child(2)::before { left: 45%; transform: translateX(-50%) rotate(.9deg); }
+    .tc:nth-child(3)::before { right: 20px; left: auto; transform: rotate(-0.6deg); }
+    .tc-q {
+      font-family: var(--fsc); font-style: italic;
+      font-size: 14.5px; line-height: 1.78; color: var(--bk); margin-bottom: 20px;
+    }
+    .tc-a {
+      font-family: var(--fm); font-size: 9px; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--mu);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .tc-a::before { content: ''; width: 16px; height: 1px; background: var(--mu); flex-shrink: 0; }
+    /* ink splatter */
+    .ink-blob { position: absolute; pointer-events: none; opacity: .05; }
+
+    /* ── BOOK 06 ─────────────────────────────────────────────── */
+    #s06 { display: flex; background: var(--bk); color: #fff; min-height: 60vh; }
+    #s06 .sb { padding-top: 60px; padding-bottom: 60px; }
+    .bk-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; }
+    .bk-left {
+      padding: 60px 40px; border-right: 1px solid var(--bdi);
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .bk-head {
+      font-family: var(--fd); font-size: clamp(32px,4vw,66px);
+      line-height: .92; letter-spacing: .02em;
+    }
+    .bk-head em {
+      font-family: var(--fs); font-style: italic;
+      font-size: .82em; display: block; line-height: 1.05;
+    }
+    .bk-sub {
+      font-family: var(--fm); font-size: 9px; letter-spacing: .2em;
+      text-transform: uppercase; color: rgba(255,255,255,.32);
+      margin-top: 18px; margin-bottom: 36px;
+    }
+    .bk-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--fm); font-size: 10px; letter-spacing: .18em;
+      text-transform: uppercase; color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,.28); padding-bottom: 8px;
+      cursor: pointer; transition: border-color .25s; width: fit-content;
+    }
+    .bk-btn:hover { border-color: #fff; }
+    .bk-btn svg { width: 13px; height: 13px; transform: rotate(-45deg); }
+    .bk-right { display: grid; grid-template-columns: 1fr 1fr; }
+    .bk-contact { padding: 60px 28px; border-right: 1px solid var(--bdi); }
+    .bc { margin-bottom: 28px; }
+    .bc-lbl {
+      font-family: var(--fm); font-size: 8.5px; letter-spacing: .2em;
+      text-transform: uppercase; color: rgba(255,255,255,.26); margin-bottom: 5px;
+    }
+    .bc-val { font-family: var(--fm); font-size: 11px; letter-spacing: .04em; color: rgba(255,255,255,.72); }
+    .bk-art { position: relative; overflow: hidden; min-height: 240px; }
+    .bk-art img { filter: grayscale(100%) contrast(1.35) brightness(.48); }
+    .bk-copy {
+      position: absolute; bottom: 18px; right: 0;
+      font-family: var(--fm); font-size: 8px; letter-spacing: .14em;
+      color: rgba(255,255,255,.2); writing-mode: vertical-rl;
+    }
+
+    /* ── REVEAL ──────────────────────────────────────────────── */
+    .rv { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+    .rv.on { opacity: 1; transform: translateY(0); }
+    .rv.d1 { transition-delay: .1s; } .rv.d2 { transition-delay: .2s; }
+    .rv.d3 { transition-delay: .3s; } .rv.d4 { transition-delay: .4s; }
+
+    /* ── MOBILE ───────────────────────────────────────────────── */
+    @media (max-width: 767px) {
+      :root { --sb: 36px; }
+      #nav { padding: 14px 16px; }
+      .nav-lbl { display: none; }
+
+      /* hero */
+      #s01 .sb { padding-top: 80px; }
+      .h-body { grid-template-columns: 1fr; }
+      .h-photo { height: 54dvh; }
+      .h-photo img { height: 54dvh; }
+      .h-col { padding: 20px 16px 44px; }
+      .h-col-num { position: static; margin-bottom: 10px; }
+      .h-cta { position: static; align-items: flex-start; margin-bottom: 16px; }
+      h1.htitle { font-size: clamp(60px,18vw,98px); clip-path: none !important; }
+      .htagline { opacity: 1 !important; transform: none !important; }
+      .spin { position: static; margin-top: 14px; opacity: 1 !important; }
+      .h-caption { bottom: 12px; left: 12px; }
+
+      /* philosophy */
+      .p-body { grid-template-columns: 1fr; }
+      .p-left { padding: 40px 16px; }
+      .p-right { height: 56vw; min-height: 200px; }
+      .p-col { padding: 14px; }
+
+      /* gallery */
+      .g-body { padding: 40px 12px; }
+      .ggrid { grid-template-columns: repeat(2,1fr); grid-auto-rows: 142px; gap: 3px; }
+      .gi.big { grid-column: span 2; grid-row: span 1; }
+      .gi.tall { grid-row: span 1; }
+      .gi-num { font-size: 28px; }
+
+      /* process */
+      .pr-body { padding: 40px 12px; }
+      .prsteps { grid-template-columns: 1fr 1fr; }
+      .prs { padding: 20px 12px; border-top: 1px solid var(--bdi); border-left: none !important; }
+      .prs:nth-child(even) { border-left: 1px solid var(--bdi) !important; }
+      .prs:nth-child(1), .prs:nth-child(2) { border-top: none; }
+      .prs:last-child { grid-column: span 2; border-left: none !important; }
+
+      /* testimonials */
+      .w-body { padding: 40px 12px; overflow-x: hidden; }
+      .wgrid {
+        display: flex; gap: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; padding-bottom: 4px;
+      }
+      .wgrid::-webkit-scrollbar { display: none; }
+      .tc { min-width: 78vw; flex-shrink: 0; }
+
+      /* book */
+      .bk-body { grid-template-columns: 1fr; }
+      .bk-left { padding: 40px 16px; border-right: none; border-bottom: 1px solid var(--bdi); }
+      .bk-right { grid-template-columns: 1fr; }
+      .bk-contact { padding: 32px 16px; border-right: none; border-bottom: 1px solid var(--bdi); }
+      .bk-art { min-height: 42vw; }
+    }
+
+    /* ── TABLET ───────────────────────────────────────────────── */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      h1.htitle { font-size: clamp(64px,9vw,110px); }
+      .prsteps { grid-template-columns: repeat(3,1fr); }
+      .prs:nth-child(4) { border-left: none; }
+      .ggrid { grid-template-columns: repeat(3,1fr); }
+      .wgrid { gap: 14px; }
+    }
+
+    /* ── REDUCED MOTION ──────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .spin { animation: none; }
+      .rv, h1.htitle, .htagline { transition: none !important; opacity: 1 !important; transform: none !important; clip-path: none !important; }
+      * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ═══════════════════════════════════════════════════ -->
+<nav id="nav" aria-label="Main navigation">
+  <a href="#s01" class="nav-logo" aria-label="INK MEMORY — home">IM</a>
+  <div class="nav-r">
+    <span class="nav-lbl" aria-hidden="true">MENU</span>
+    <button class="burger" id="burger" aria-label="Open navigation" aria-expanded="false" aria-controls="ov">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ OVERLAY ════════════════════════════════════════════════ -->
+<div id="ov" role="dialog" aria-modal="true" aria-label="Site navigation">
+  <ul class="ov-links">
+    <li><a href="#s02" data-cls><span>Philosophy</span><span class="ov-num">01</span></a></li>
+    <li><a href="#s03" data-cls><span>Gallery</span><span class="ov-num">02</span></a></li>
+    <li><a href="#s04" data-cls><span>Process</span><span class="ov-num">03</span></a></li>
+    <li><a href="#s05" data-cls><span>Testimonials</span><span class="ov-num">04</span></a></li>
+    <li><a href="#s06" data-cls><span>Book</span><span class="ov-num">05</span></a></li>
+  </ul>
+  <div class="ov-foot">
+    <div class="ov-contact">@inkmemory<br>LONDON, UK</div>
+    <a href="#s06" class="ov-book-btn" data-cls>
+      BOOK NOW
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M1 11L11 1M11 1H3M11 1V9"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<!-- ══ 01 HERO ════════════════════════════════════════════════ -->
+<section id="s01" aria-labelledby="htitle">
+
+  <div class="sb li" aria-hidden="true">
+    <span class="sn">01</span>
+    <div class="h-dots">
+      <div class="hdot on" id="d0"></div>
+      <div class="hdot" id="d1"></div>
+      <div class="hdot" id="d2"></div>
+    </div>
+    <span class="sl">HERO</span>
+  </div>
+
+  <div class="h-body">
+    <!-- Photo -->
+    <div class="h-photo">
+      <img
+        src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&q=85&auto=format&fit=crop&crop=face"
+        alt="Editorial portrait — dramatic monochrome lighting"
+        loading="eager" fetchpriority="high" width="900" height="1200"
+      />
+      <div class="h-caption">
+        EACH MARK<br>CARRIES WHAT<br>WORDS CANNOT.
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="h-col">
+      <div class="h-col-num">01</div>
+
+      <div class="h-cta">
+        <div class="h-cta-bar"></div>
+        <a href="#s06" aria-label="Book or inquire">
+          BOOK / INQUIRE
+          <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M1 10L10 1M10 1H3M10 1V8"/>
+          </svg>
+        </a>
+      </div>
+
+      <h1 class="htitle" id="htitle">INK<br>MEMORY</h1>
+      <p class="htagline">TATTOOS AS<br>LIVING STORIES.</p>
+
+      <!-- Rotating label circle -->
+      <svg class="spin" viewBox="0 0 76 76" aria-hidden="true">
+        <defs>
+          <path id="cp" d="M38,38 m-26,0 a26,26 0 1,1 52,0 a26,26 0 1,1 -52,0"/>
+        </defs>
+        <text font-family="'JetBrains Mono',monospace" font-size="6.6" fill="#080808" letter-spacing="2.1">
+          <textPath href="#cp">INK MEMORY · LONDON · 2024 · </textPath>
+        </text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 02 PHILOSOPHY ══════════════════════════════════════════ -->
+<section id="s02" aria-labelledby="phead">
+
+  <div class="sb dk" aria-hidden="true">
+    <span class="sn inv">02</span>
+    <span class="sl inv">PHILOSOPHY</span>
+  </div>
+
+  <div class="p-body">
+    <div class="p-left">
+      <h2 class="phead rv" id="phead">BEYOND<br>DECORATION.</h2>
+      <div class="ptxt rv d1">
+        <p>My work is not about trends.</p>
+        <p>It's about connection, emotion and<br>the quiet stories we carry.</p>
+        <p>Every tattoo is a collaboration.</p>
+        <p>Every piece is unique.</p>
+      </div>
+    </div>
+
+    <div class="p-right" aria-label="Philosophy imagery">
+      <div class="p-col">
+        <div class="pimg tall">
+          <img
+            src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=500&q=82&auto=format&fit=crop"
+            alt="Intricate illustrative tattoo on back"
+            loading="lazy" width="500" height="700"
+          />
+        </div>
+        <div class="pimg">
+          <img
+            src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=400&q=80&auto=format&fit=crop"
+            alt="Tattooing session — artist at work"
+            loading="lazy" width="400" height="300"
+          />
+        </div>
+        <div class="pimg">
+          <img
+            src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&q=80&auto=format&fit=crop"
+            alt="Close-up detail of tattoo on shoulder"
+            loading="lazy" width="400" height="300"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 03 GALLERY ═════════════════════════════════════════════ -->
+<section id="s03" aria-labelledby="gal-h">
+
+  <div class="sb li" aria-hidden="true">
+    <span class="sn">03</span>
+    <span class="sl">GALLERY</span>
+  </div>
+
+  <div class="g-body">
+    <h2 id="gal-h" class="sr-only">Portfolio Gallery</h2>
+    <div class="ggrid" role="list" aria-label="Tattoo portfolio">
+
+      <div class="gi big rv" role="listitem" aria-label="Gallery piece 01">
+        <img
+          src="https://images.unsplash.com/photo-1554244933-d876deb6b2ff?w=700&q=82&auto=format&fit=crop"
+          alt="Ornate tattoo detail on hands"
+          loading="lazy" width="700" height="584"
+        />
+        <div class="gi-overlay"><span class="gi-num">01</span></div>
+      </div>
+
+      <div class="gi rv d1" role="listitem" aria-label="Gallery piece 02">
+        <img
+          src="https://images.unsplash.com/photo-1612201142855-7873bc1661b4?w=400&q=80&auto=format&fit=crop"
+          alt="Portrait with tattoo artwork"
+          loading="lazy" width="400" height="192"
+        />
+        <div class="gi-overlay"><span class="gi-num">02</span></div>
+      </div>
+
+      <div class="gi rv d2" role="listitem" aria-label="Gallery piece 03">
+        <img
+          src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&q=80&auto=format&fit=crop"
+          alt="Close-up editorial portrait"
+          loading="lazy" width="400" height="192"
+        />
+        <div class="gi-overlay"><span class="gi-num">03</span></div>
+      </div>
+
+      <div class="gi rv d1" role="listitem" aria-label="Gallery piece 04">
+        <img
+          src="https://images.unsplash.com/photo-1604881988758-f76ad2f7aac1?w=400&q=80&auto=format&fit=crop"
+          alt="Tattoo on forearm — fine line work"
+          loading="lazy" width="400" height="192"
+        />
+        <div class="gi-overlay"><span class="gi-num">04</span></div>
+      </div>
+
+      <div class="gi tall rv d2" role="listitem" aria-label="Gallery piece 05">
+        <img
+          src="https://images.unsplash.com/photo-1619537903549-0981d6bca911?w=400&q=80&auto=format&fit=crop"
+          alt="Full arm tattoo — illustrative style"
+          loading="lazy" width="400" height="388"
+        />
+        <div class="gi-overlay"><span class="gi-num">05</span></div>
+      </div>
+
+      <div class="gi rv d3" role="listitem" aria-label="Gallery piece 06">
+        <img
+          src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&q=80&auto=format&fit=crop"
+          alt="Dark editorial tattoo portrait"
+          loading="lazy" width="400" height="192"
+        />
+        <div class="gi-overlay"><span class="gi-num">06</span></div>
+      </div>
+
+    </div>
+
+    <div class="g-foot">
+      <button class="gcta" aria-label="View full gallery">
+        <span class="gcta-txt">VIEW<br>PROJECT</span>
+        <span class="gcta-ring" aria-hidden="true">
+          <svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 13L13 2M13 2H4M13 2V11"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 04 PROCESS ═════════════════════════════════════════════ -->
+<section id="s04" aria-labelledby="proc-h">
+
+  <div class="sb dk" aria-hidden="true">
+    <span class="sn inv">04</span>
+    <span class="sl inv">PROCESS</span>
+  </div>
+
+  <div class="pr-body">
+    <h2 id="proc-h" class="sr-only">Our Process</h2>
+    <div class="prsteps">
+
+      <div class="prs rv">
+        <span class="prs-n">01</span>
+        <h3 class="prs-t">CONNECT</h3>
+        <p class="prs-b">We talk. Your ideas, inspirations, and story.</p>
+        <div class="prs-ico" aria-hidden="true">
+          <svg viewBox="0 0 36 36">
+            <path d="M6 30C10 18 20 8 32 12"/>
+            <path d="M12 26C15 20 22 14 30 18" opacity=".45"/>
+            <circle cx="32" cy="12" r="2.2" fill="currentColor" stroke="none" opacity=".3"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="prs rv d1">
+        <span class="prs-n">02</span>
+        <h3 class="prs-t">CONCEPT</h3>
+        <p class="prs-b">I create a custom design just for you.</p>
+        <div class="prs-ico" aria-hidden="true">
+          <svg viewBox="0 0 36 36">
+            <path d="M6 32L18 6L30 32"/>
+            <path d="M10 24h16" opacity=".45"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="prs rv d2">
+        <span class="prs-n">03</span>
+        <h3 class="prs-t">REFINE</h3>
+        <p class="prs-b">We perfect every detail together.</p>
+        <div class="prs-ico" aria-hidden="true">
+          <svg viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="11"/>
+            <path d="M13 18l3.5 3.5L23 14" opacity=".55"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="prs rv d3">
+        <span class="prs-n">04</span>
+        <h3 class="prs-t">INK</h3>
+        <p class="prs-b">The process. Focus, trust, and time.</p>
+        <div class="prs-ico" aria-hidden="true">
+          <svg viewBox="0 0 36 36">
+            <path d="M25 7l4 4-15 15-5 1.5 1.5-5L25 7z"/>
+            <path d="M21.5 10.5l4 4" opacity=".45"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="prs rv d4">
+        <span class="prs-n">05</span>
+        <h3 class="prs-t">AFTERCARE</h3>
+        <p class="prs-b">Guidance for healing and lasting results.</p>
+        <div class="prs-ico" aria-hidden="true">
+          <svg viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="11"/>
+            <path d="M18 12v6l3.5 2" opacity=".55"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ 05 TESTIMONIALS ════════════════════════════════════════ -->
+<section id="s05" aria-labelledby="words-h">
+
+  <div class="sb li" aria-hidden="true">
+    <span class="sn">05</span>
+    <span class="sl">WORDS</span>
+  </div>
+
+  <div class="w-body">
+    <h2 id="words-h" class="sr-only">Client Words</h2>
+    <div class="wgrid">
+
+      <article class="tc rv">
+        <blockquote class="tc-q">
+          "More than a tattoo, it's a part of me forever."
+        </blockquote>
+        <footer class="tc-a">ALEX</footer>
+      </article>
+
+      <article class="tc rv d1">
+        <blockquote class="tc-q">
+          "The experience was as meaningful as the tattoo."
+        </blockquote>
+        <footer class="tc-a">MARIA</footer>
+      </article>
+
+      <article class="tc rv d2">
+        <blockquote class="tc-q">
+          "Real artist. Real connection. Real work."
+        </blockquote>
+        <footer class="tc-a">JAMES</footer>
+      </article>
+
+    </div>
+
+    <!-- ink blob decoration -->
+    <svg class="ink-blob" style="right:32px;bottom:0;width:140px;height:90px;" viewBox="0 0 140 90" aria-hidden="true">
+      <ellipse cx="70" cy="62" rx="38" ry="10" fill="#080808" transform="rotate(-16 70 62)"/>
+      <circle cx="36" cy="38" r="5.5" fill="#080808"/>
+      <circle cx="108" cy="24" r="3" fill="#080808"/>
+      <ellipse cx="90" cy="76" rx="18" ry="5" fill="#080808" transform="rotate(12 90 76)"/>
+      <circle cx="18" cy="64" r="3.5" fill="#080808"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══ 06 BOOK ════════════════════════════════════════════════ -->
+<section id="s06" aria-labelledby="bk-h">
+
+  <div class="sb dk" aria-hidden="true">
+    <span class="sn inv">06</span>
+    <span class="sl inv">BOOK</span>
+  </div>
+
+  <div class="bk-body">
+    <div class="bk-left">
+      <div>
+        <h2 class="bk-head rv" id="bk-h">
+          LET'S CREATE<br>SOMETHING<br>
+          <em>UNFORGETTABLE.</em>
+        </h2>
+        <p class="bk-sub rv d1">READY TO START YOUR PROJECT?</p>
+        <a href="mailto:hello@inkmemory.com" class="bk-btn rv d2" aria-label="Send booking enquiry">
+          BOOK / INQUIRE
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M1 12L12 1M12 1H3M12 1V10"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="bk-right">
+      <div class="bk-contact">
+        <div class="bc"><div class="bc-lbl">INSTAGRAM</div><div class="bc-val">@inkmemory</div></div>
+        <div class="bc"><div class="bc-lbl">EMAIL</div><div class="bc-val">hello@inkmemory.com</div></div>
+        <div class="bc"><div class="bc-lbl">LOCATION</div><div class="bc-val">LONDON, UK</div></div>
+      </div>
+      <div class="bk-art">
+        <img
+          src="https://images.unsplash.com/photo-1543269865-4430f94492b9?w=500&q=80&auto=format&fit=crop"
+          alt="Ink on hands — abstract artistry"
+          loading="lazy" width="500" height="400"
+        />
+        <span class="bk-copy">© 2024 INK MEMORY</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ── NAV ────────────────────────────────────────────────────── */
+const nav    = document.getElementById('nav');
+const ov     = document.getElementById('ov');
+const burger = document.getElementById('burger');
+let open = false;
+
+function openNav() {
+  open = true;
+  burger.classList.add('open');
+  ov.classList.add('open');
+  burger.setAttribute('aria-expanded','true');
+  burger.setAttribute('aria-label','Close navigation');
+  document.body.style.overflow = 'hidden';
+}
+function closeNav() {
+  open = false;
+  burger.classList.remove('open');
+  ov.classList.remove('open');
+  burger.setAttribute('aria-expanded','false');
+  burger.setAttribute('aria-label','Open navigation');
+  document.body.style.overflow = '';
+}
+burger.addEventListener('click', () => open ? closeNav() : openNav());
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && open) closeNav(); });
+document.querySelectorAll('[data-cls]').forEach(a => a.addEventListener('click', closeNav));
+
+/* ── NAV COLOUR ─────────────────────────────────────────────── */
+const darkSecs = ['s02','s04','s06'];
+const allSecs  = Array.from(document.querySelectorAll('section[id]'));
+
+function setNavColor() {
+  if (open) return;
+  const y = window.scrollY + 64;
+  let dark = false;
+  allSecs.forEach(s => {
+    if (y >= s.offsetTop && y < s.offsetTop + s.offsetHeight)
+      dark = darkSecs.includes(s.id);
+  });
+  dark ? nav.classList.add('inv') : nav.classList.remove('inv');
+}
+window.addEventListener('scroll', setNavColor, { passive: true });
+setNavColor();
+
+/* ── SCROLL REVEAL ──────────────────────────────────────────── */
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+}, { threshold: .14, rootMargin: '0px 0px -32px 0px' });
+document.querySelectorAll('.rv').forEach(el => ro.observe(el));
+
+/* ── HERO ANIMATIONS (on load) ───────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const t = document.querySelector('h1.htitle');
+    const g = document.querySelector('.htagline');
+    const s = document.querySelector('.spin');
+    if (t) t.classList.add('on');
+    if (g) g.classList.add('on');
+    if (s) s.classList.add('on');
+  }, 120);
+});
+
+/* ── HERO DOTS ──────────────────────────────────────────────── */
+const dotSecs = [document.getElementById('s01'), document.getElementById('s02'), document.getElementById('s03')];
+const dots    = [document.getElementById('d0'), document.getElementById('d1'), document.getElementById('d2')];
+
+function updateDots() {
+  const mid = window.scrollY + window.innerHeight * .5;
+  let idx = 0;
+  dotSecs.forEach((s, i) => { if (s && mid >= s.offsetTop) idx = i; });
+  dots.forEach((d, i) => d && d.classList.toggle('on', i === idx));
+}
+window.addEventListener('scroll', updateDots, { passive: true });
+
+/* ── GALLERY CTA keyboard ────────────────────────────────────── */
+document.querySelector('.gcta').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    document.getElementById('s03').scrollIntoView({ behavior: 'smooth' });
+  }
+});
+</script>
+</body>
+</html>
